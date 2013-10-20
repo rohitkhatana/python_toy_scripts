@@ -42,17 +42,26 @@ if __name__=="__main__":
               oauth_token, oauth_token_secret)
     #patio11 = software developer blogger
     #user_list = api.get_user_search('patio11')
-    user_timeline = api.get_user_timeline(screen_name='rohitkhatana3')
+    user_timeline = api.get_user_timeline(screen_name='uxmovement')
     rate_limit = api.rate_limit(['statuses'])
     tweet_list = []
-    for i in user_timeline :
-        tweet = i['text'].encode('ascii','ignore')
-        tweet_list.append(tweet.lower())    #ignore is for non ascii character
-         
+    c=0
+    while True:
+        for i in user_timeline:
+            id = i['id']
+            tweet = i['text'].encode('ascii','ignore')
+            if tweet not in tweet_list:
+                tweet_list.append((tweet.lower(),id))    #ignore is for non ascii character
+        max_id = tweet_list[-1][1]
+        c+=1
+        user_timeline=api.get_user_timeline(screen_name='uxmovement',max_id=max_id)
+        if c==10:
+            break
     d={}
-    print tweet_list
-    for tweet in tweet_list:
-        sp = tweet.split()
+    
+    for tweet,i in zip(tweet_list,range(len(tweet_list))):
+        print str(i) + "----->" + tweet[0]
+        sp = tweet[0].split()
         for word in sp:
             '''for i in range(len(word)):
                 if word[i].isalnum() or ord(word[i]) == 35  or ord(word[i]) == 64:    
@@ -71,14 +80,19 @@ if __name__=="__main__":
 
     mx=0
     key=''
+    word_list=[]
     for k,v in d.iteritems():
-        print k,v
+        t = (v,k)
+        word_list.append(t)
         if v > mx:
           key = k
           mx=v
 
 
 
-
-        print "--------max------"
+    word_list.sort()
+    for i in word_list:
+        print i
+        print "--------------"
+    print "---------------------------maxxxx-------------"
     print key,mx
